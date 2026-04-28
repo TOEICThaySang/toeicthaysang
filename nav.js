@@ -126,14 +126,9 @@
         </li>`;
     }).join('');
 
-    /* Logo — img với fallback text */
+    /* Logo — chữ thuần */
     const logoHTML = `
       <a href="${r('index.html')}" class="nav-logo" aria-label="${SITE.name} — Trang chủ">
-        <img
-          src="${r(SITE.logo)}"
-          alt="${SITE.name}"
-          class="nav-logo-img"
-          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
         <span class="nav-logo-fallback">${SITE.name}</span>
       </a>`;
 
@@ -223,14 +218,7 @@
     footer.className = 'footer';
     footer.innerHTML = `
       <div class="container">
-        <div class="footer-logo">
-          <img
-            src="${r(SITE.logo)}"
-            alt="${SITE.name}"
-            onerror="this.style.display='none'">
-        </div>
-        <p class="footer-desc">${SITE.footer.about}</p>
-        <div class="footer-copy">${SITE.footer.copyright}</div>
+        <div class="footer-copy">© ${new Date().getFullYear()} ${SITE.name}</div>
       </div>`;
 
     document.body.appendChild(footer);
