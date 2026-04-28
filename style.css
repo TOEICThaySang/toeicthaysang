@@ -154,7 +154,7 @@ input, select, textarea { font-family: var(--font); }
   font-size: 1rem;
   font-weight: 800;
   color: var(--primary);
-  display: none;
+  display: flex;
 }
 
 /* ── Links ── */
