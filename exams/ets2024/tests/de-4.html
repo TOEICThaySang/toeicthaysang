@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ETS 2024 — Test 4 | TOEIC Thầy Sang</title>
+<meta name="description" content="ETS 2024 Test 4 — 200 câu TOEIC chuẩn format, có giải thích chi tiết từng câu.">
+<link rel="stylesheet" href="../../../style.css">
+<link rel="stylesheet" href="../../style.css">
+</head>
+<body>
+
+<!--
+  ══════════════════════════════════════════════════════════
+  HƯỚNG DẪN CHÈN NỘI DUNG ĐỀ THI
+  ══════════════════════════════════════════════════════════
+  1. Xoá toàn bộ khối <div class="pending-wrap">...</div>
+  2. Bỏ comment khối EXAM_DATA bên dưới và điền câu hỏi vào
+  3. Bỏ comment 3 dòng cuối <body> để kích hoạt engine
+  4. Lưu file → commit GitHub → Cloudflare tự deploy
+  ══════════════════════════════════════════════════════════
+
+  EXAM_DATA mẫu:
+
+  <script>
+  const EXAM_DATA = {
+    id:        'ets2024_4',
+    title:     'ETS 2024 — Test 4',
+    questions: [
+      {
+        part:        'Part 5',
+        question:    'The marketing team _____ a new campaign for the upcoming product launch.',
+        options:     ['A. prepare', 'B. prepares', 'C. is preparing', 'D. preparation'],
+        answer:      'C',
+        explanation: 'Subject "The marketing team" + blank + "a new campaign" → cần động từ. "Is preparing" (present continuous) phù hợp với ngữ cảnh đang lên kế hoạch.'
+      },
+      ...200 câu
+    ]
+  };
+  </script>
+-->
+
+<script src="../../../config.js"></script>
+<script>const PATH_TO_ROOT = '../../../';</script>
+<script src="../../../nav.js"></script>
+<script src="../../config.js"></script>
+
+<!-- Exam info bar — hiện sau khi có nội dung thật -->
+<div class="exam-bar" id="examBar" style="display:none">
+  <div class="exam-bar-inner">
+    <span class="exam-bar-title" id="examBarTitle">ETS 2024 — Test 4</span>
+    <div class="exam-progress-wrap">
+      <div class="exam-progress-bar">
+        <div class="exam-progress-fill" id="examProgressFill"></div>
+      </div>
+      <span class="exam-progress-label" id="examProgressLabel">0/200</span>
+    </div>
+    <div class="timer-display" id="timerDisplay">⏱ 120:00</div>
+  </div>
+</div>
+
+<div class="exam-page-body">
+  <div class="exam-wrap">
+
+    <a href="../../index.html" class="exam-back-link">← Về danh sách đề</a>
+
+    <!-- Q-nav dots — hiện sau khi có nội dung thật -->
+    <!--
+    <div class="q-nav-wrap">
+      <div class="q-nav-label">Câu hỏi</div>
+      <div class="q-nav" id="qNav"></div>
+    </div>
+    -->
+
+    <!-- Trạng thái chờ nội dung -->
+    <div class="pending-wrap">
+      <div class="pending-box">
+        <div class="pending-icon">🚧</div>
+        <div class="pending-title">ETS 2024 — Test 4</div>
+        <div class="pending-desc">
+          Nội dung đề thi đang được chuẩn bị.<br>
+          Vui lòng quay lại sau.
+        </div>
+        <a href="../../index.html" class="btn btn-primary">← Về danh sách</a>
+      </div>
+    </div>
+
+    <!-- Câu hỏi sẽ được render vào đây bởi exam-engine.js -->
+    <!-- Bỏ comment khi đã có EXAM_DATA -->
+    <!--
+    <div id="examWrap"></div>
+    <div class="exam-submit-wrap" id="examSubmitWrap">
+      <button class="btn btn-primary" onclick="submitExam()">📤 Nộp bài</button>
+    </div>
+    -->
+
+  </div>
+</div>
+
+<!-- Bỏ comment dòng này khi đã có EXAM_DATA và examWrap -->
+<!-- <script src="../../exam-engine.js"></script> -->
+
+</body>
+</html>

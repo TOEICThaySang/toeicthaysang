@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TOEIC Thầy Sang — Luyện TOEIC hiệu quả</title>
+<meta name="description" content="Luyện thi TOEIC cùng Thầy Sang — Đề thi ETS chuẩn format, có giải thích chi tiết từng câu.">
+<link rel="stylesheet" href="style.css">
+<style>
+
+/* ══════════════════════════════════════
+   HERO SECTION
+   ══════════════════════════════════════ */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(var(--nav-h) + 40px) 16px 60px;
+  background: linear-gradient(135deg, #0d1b3e 0%, #1a3a6b 50%, #1a5cbf 100%);
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+
+/* Orb góc trên phải */
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 360px; height: 360px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(29,111,242,.3) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Orb góc dưới trái */
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -80px; left: -40px;
+  width: 280px; height: 280px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-inner {
+  position: relative;
+  max-width: 580px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Badge trên cùng */
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(29,111,242,.2);
+  color: #93c5fd;
+  border: 1px solid rgba(29,111,242,.45);
+  padding: 5px 16px;
+  border-radius: var(--radius-pill);
+  font-size: .72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  margin-bottom: 22px;
+}
+
+/* Tiêu đề chính */
+.hero-title {
+  font-size: clamp(2.1rem, 6vw, 3.5rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -.02em;
+  margin-bottom: 18px;
+  color: #fff;
+}
+.hero-title .hl {
+  color: #60a5fa;
+}
+
+/* Mô tả */
+.hero-desc {
+  font-size: clamp(.9rem, 2.5vw, 1.05rem);
+  color: rgba(255,255,255,.75);
+  line-height: 1.8;
+  max-width: 420px;
+  margin: 0 auto 36px;
+}
+
+/* CTA button */
+.hero-cta {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.hero-cta .btn {
+  font-size: 1rem;
+  padding: 14px 40px;
+  min-width: 200px;
+}
+
+/* Stats dưới */
+.hero-stats {
+  display: flex;
+  gap: 0;
+  justify-content: center;
+  margin-top: 60px;
+  padding-top: 36px;
+  border-top: 1px solid rgba(255,255,255,.15);
+}
+.hero-stat {
+  flex: 1;
+  text-align: center;
+  padding: 0 12px;
+  position: relative;
+}
+.hero-stat + .hero-stat::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 20%; bottom: 20%;
+  width: 1px;
+  background: rgba(255,255,255,.15);
+}
+.hero-stat-num {
+  font-size: clamp(1.3rem, 3.5vw, 1.8rem);
+  font-weight: 800;
+  color: #60a5fa;
+  line-height: 1;
+  margin-bottom: 5px;
+}
+.hero-stat-label {
+  font-size: .72rem;
+  color: rgba(255,255,255,.6);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* ── Mobile ── */
+@media (max-width: 767px) {
+  .hero::before { width: 400px; height: 400px; }
+  .hero-stats { gap: 0; }
+  .hero-stat { padding: 0 8px; }
+  .hero-stat-num { font-size: 1.3rem; }
+  .hero-cta .btn { width: 100%; min-width: unset; }
+}
+
+/* ── Nhỏ hơn 360px ── */
+@media (max-width: 359px) {
+  .hero-title { font-size: 1.8rem; }
+  .hero-stats { flex-wrap: wrap; gap: 16px; }
+  .hero-stat + .hero-stat::before { display: none; }
+}
+
+</style>
+</head>
+<body>
+
+<script src="config.js"></script>
+<script>const PATH_TO_ROOT = '';</script>
+<script src="nav.js"></script>
+
+<main>
+  <section class="hero">
+    <div class="hero-inner">
+
+      <div class="hero-badge anim">
+        🎯 Luyện thi TOEIC cùng Thầy Sang
+      </div>
+
+      <h1 class="hero-title anim anim-d1">
+        Chinh phục <span class="hl">TOEIC</span><br>
+        cùng Thầy Sang
+      </h1>
+
+      <p class="hero-desc anim anim-d2">
+        Đề thi ETS chuẩn format — giải thích chi tiết từng câu,
+        giúp bạn hiểu sâu và tăng điểm nhanh chóng.
+      </p>
+
+      <div class="hero-cta anim anim-d3">
+        <a href="exams/index.html" class="btn btn-primary">
+          📝 Luyện đề ngay
+        </a>
+      </div>
+
+      <div class="hero-stats anim anim-d4">
+        <div class="hero-stat">
+          <div class="hero-stat-num">ETS</div>
+          <div class="hero-stat-label">Đề thi<br>thực tế</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">200</div>
+          <div class="hero-stat-label">Câu<br>mỗi đề</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">120'</div>
+          <div class="hero-stat-label">Thời gian<br>làm bài</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">Chi tiết</div>
+          <div class="hero-stat-label">Giải thích<br>từng câu</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+</body>
+</html>

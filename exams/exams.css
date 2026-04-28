@@ -1,0 +1,184 @@
+/* ══════════════════════════════════════════════════════════
+   exams/exams.css — CSS trang DANH SÁCH đề thi
+   Dùng cho: exams/index.html
+   KHÔNG dùng cho trang làm bài → xem exams/style.css
+   ══════════════════════════════════════════════════════════ */
+
+/* ─── Section header ─── */
+.exams-section-header {
+  margin-bottom: 20px;
+}
+.exams-section-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.exams-section-sub {
+  font-size: .84rem;
+  color: var(--text-3);
+}
+
+/* ─── Grid đề thi ─── */
+/* Mobile: 2 cột */
+.exam-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+/* ─── Card đề thi ─── */
+.exam-card {
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 14px;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+  overflow: hidden;
+  min-height: 148px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Gạch màu đầu card */
+.exam-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary), var(--primary-mid));
+  transition: var(--transition);
+}
+
+/* Card paid — gạch xám */
+.exam-card.paid::before {
+  background: linear-gradient(90deg, #94a3b8, #cbd5e1);
+}
+
+/* Hover effect — chỉ trên desktop */
+@media (hover: hover) {
+  .exam-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary);
+  }
+  .exam-card.paid:hover {
+    border-color: var(--warning);
+  }
+  .exam-card:hover::before {
+    height: 4px;
+  }
+}
+
+/* Active state — mobile tap feedback */
+.exam-card:active {
+  transform: scale(.98);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Số thứ tự */
+.exam-card-num {
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: var(--border-2);
+  line-height: 1;
+}
+
+/* Tiêu đề */
+.exam-card-title {
+  font-size: .9rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.35;
+}
+
+/* Meta (200 câu · 120 phút) */
+.exam-card-meta {
+  font-size: .74rem;
+  color: var(--text-3);
+  line-height: 1.4;
+}
+
+/* Best score */
+.exam-card-best {
+  font-size: .74rem;
+  font-weight: 700;
+  color: var(--success);
+}
+
+/* Footer card: badge action */
+.exam-card-footer {
+  margin-top: auto;
+  padding-top: 6px;
+}
+.exam-card-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: var(--radius-pill);
+  font-size: .74rem;
+  font-weight: 700;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+.exam-card-btn.free {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+.exam-card-btn.paid-lock {
+  background: var(--bg);
+  color: var(--text-3);
+  border: 1px solid var(--border);
+}
+.exam-card-btn.coming-soon {
+  background: var(--bg);
+  color: var(--text-3);
+  border: 1px dashed var(--border);
+}
+
+/* Hover trên btn (desktop) */
+@media (hover: hover) {
+  .exam-card:hover .exam-card-btn.free {
+    background: var(--primary);
+    color: #fff;
+  }
+  .exam-card:hover .exam-card-btn.paid-lock {
+    background: var(--warning-light);
+    color: var(--warning);
+    border-color: var(--warning);
+  }
+}
+
+/* ── Tablet ≥ 768px: 3 cột ── */
+@media (min-width: 768px) {
+  .exam-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .exam-card {
+    min-height: 168px;
+    padding: 20px 18px;
+  }
+  .exam-card-num { font-size: 2rem; }
+  .exam-card-title { font-size: .95rem; }
+}
+
+/* ── Desktop ≥ 1024px: 4 cột ── */
+@media (min-width: 1024px) {
+  .exam-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+  }
+  .exam-card { min-height: 176px; padding: 22px 20px; }
+}
+
+/* ── Màn hình rất nhỏ < 360px: 1 cột ── */
+@media (max-width: 359px) {
+  .exam-grid { grid-template-columns: 1fr; }
+}
