@@ -227,26 +227,23 @@ function buildScreens(parts) {
 // ══════════════════════════════════════════════════════════════
 // 1. AUTH GATE
 // ══════════════════════════════════════════════════════════════
-function renderAuthGate(blockedEmail) {
+function renderAuthGate(showNotRegistered) {
   document.body.innerHTML = '';
   document.body.className = 'auth-page';
 
   const card = make('div','auth-card');
-  const isBlocked = !!blockedEmail;
-
   card.innerHTML = `
-    <div class="auth-lock-icon">${isBlocked ? '🔒' : '🔑'}</div>
-    <div class="auth-title">${isBlocked ? 'Tài khoản chưa được kích hoạt' : 'Đăng nhập để làm bài'}</div>
-    <div class="auth-sub">
-      ${isBlocked
-        ? `Gmail <b>${blockedEmail}</b> chưa có quyền truy cập.<br>Vui lòng nâng cấp tài khoản hoặc đăng nhập bằng Gmail khác.`
-        : `Vui lòng đăng nhập bằng Gmail để tiếp tục.`}
+    <div class="auth-lock-icon">📚</div>
+    <div class="auth-title">TOEIC Thầy Sang</div>
+    <div class="auth-sub" ${showNotRegistered ? 'style="color:#dc2626;font-weight:600"' : ''}>
+      ${showNotRegistered
+        ? 'Tài khoản chưa đăng ký.<br>Liên hệ giáo viên để đăng ký luyện thi.'
+        : 'Vui lòng đăng nhập để tiếp tục.'}
     </div>
     <button class="btn-google-login" id="btnGoogle">
       <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
       Đăng nhập bằng Google
     </button>
-    ${isBlocked ? '<div class="auth-divider">hoặc</div><button class="btn-upgrade" id="btnUpgrade">🚀 Nâng cấp tài khoản</button>' : ''}
   `;
   document.body.appendChild(card);
 
@@ -259,21 +256,10 @@ function renderAuthGate(blockedEmail) {
     if (allowed && user) {
       currentUser = user;
       renderSelectPage();
-    } else if (email) {
-      renderAuthGate(email);
     } else {
-      btn.innerHTML = `<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google"> Đăng nhập bằng Google`;
-      btn.disabled = false;
+      renderAuthGate(!!email);
     }
   });
-
-  const btnUpgrade = card.querySelector('#btnUpgrade');
-  if (btnUpgrade) {
-    btnUpgrade.addEventListener('click', () => {
-      const root = typeof PATH_TO_ROOT !== 'undefined' ? PATH_TO_ROOT : '../../../';
-      window.location.href = root + 'upgrade.html';
-    });
-  }
 }
 
 // ══════════════════════════════════════════════════════════════
