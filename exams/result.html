@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kết quả | TOEICThaySang</title>
+<link rel="icon" href="../assets/favicon.png" type="image/png">
+<link rel="stylesheet" href="../style.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<script type="module">
+import { initializeApp }   from 'https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js';
+import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js';
+import { getFirestore, addDoc, collection } from 'https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey:            'AIzaSyCZsFnaI6k4lxUkQOCcfxjEWyvtAJGfa_8',
+  authDomain:        'toeic-thay-sang.firebaseapp.com',
+  projectId:         'toeic-thay-sang',
+  storageBucket:     'toeic-thay-sang.firebasestorage.app',
+  messagingSenderId: '30478577148',
+  appId:             '1:30478577148:web:6cae530feb9abdf2a59679',
+};
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+// ── Đọc key từ URL ──
+const params    = new URLSearchParams(location.search);
+const resultKey = params.get('key');
+
+if (!resultKey) {
+  document.body.innerHTML = '<div style="padding:40px;color:#dc2626;font-family:sans-serif">Không tìm thấy kết quả.</div>';
+  throw new Error('No result key');
+}
+
+// ── Đọc data từ localStorage ──
+let R;
+try {
+  R = JSON.parse(localStorage.getItem(resultKey));
+} catch(e) { R = null; }
+
+if (!R) {
+  document.body.innerHTML = '<div style="padding:40px;color:#dc2626;font-family:sans-serif">Dữ liệu kết quả không còn. Vui lòng làm bài lại.</div>';
+  throw new Error('No result data');
+}
+
+// ── Tính toán ──
+const pct     = R.totalQ > 0 ? Math.round(R.totalCorrect / R.totalQ * 100) : 0;
+const score   = R.totalCorrect * 5; // 1 câu = 5 điểm
+const elapsed = R.elapsed || 0;
+const mm      = Math.floor(elapsed / 60).toString().padStart(2,'0');
+const ss      = (elapsed % 60).toString().padStart(2,'0');
+
+const PART_NAMES = {
+  1: 'Part 1', 2: 'Part 2', 3: 'Part 3', 4: 'Part 4',
+  5: 'Part 5', 6: 'Part 6', 7: 'Part 7',
+};
+
+// ── Render ──
+function render(user) {
+  document.body.className = 'result-page';
+  document.body.innerHTML = '';
+
+  // Header
+  const hdr = document.createElement('div');
+  hdr.className = 'result-header';
+  hdr.innerHTML = `
+    <div class="result-header-logo">TOEIC Thầy Sang</div>
+    <div class="result-header-title">${R.examTitle} — Kết quả</div>
+    ${user ? `<div style="font-size:12px;color:rgba(255,255,255,0.5);margin-left:auto">${user.email}</div>` : ''}`;
+  document.body.appendChild(hdr);
+
+  const container = document.createElement('div');
+  container.className = 'result-container';
+
+  // Tổng điểm
+  const scoreCard = document.createElement('div');
+  scoreCard.className = 'result-score-card';
+  scoreCard.innerHTML = `
+    <div class="result-score-label">Điểm TOEIC ước tính</div>
+    <div class="result-score-main">${score}</div>
+    <div class="result-score-sub">${R.totalCorrect} / ${R.totalQ} câu đúng &nbsp;·&nbsp; ${pct}%</div>
+    <div class="result-score-grid">
+      <div class="result-stat">
+        <div class="result-stat-value">${R.totalCorrect}</div>
+        <div class="result-stat-label">Câu đúng</div>
+      </div>
+      <div class="result-stat">
+        <div class="result-stat-value">${pct}%</div>
+        <div class="result-stat-label">Tỉ lệ đúng</div>
+      </div>
+      <div class="result-stat">
+        <div class="result-stat-value">${mm}:${ss}</div>
+        <div class="result-stat-label">Thời gian</div>
+      </div>
+    </div>`;
+  container.appendChild(scoreCard);
+
+  // Chi tiết theo part
+  const partsCard = document.createElement('div');
+  partsCard.className = 'result-parts-card';
+  partsCard.innerHTML = '<div class="result-parts-title">Chi tiết theo Part</div>';
+
+  Object.entries(R.partResults).sort((a,b) => a[0]-b[0]).forEach(([p, pr]) => {
+    const pPct = pr.total > 0 ? Math.round(pr.correct / pr.total * 100) : 0;
+    const fillClass = pPct >= 70 ? 'good' : pPct >= 40 ? 'mid' : 'low';
+    const row = document.createElement('div');
+    row.className = 'result-part-row';
+    row.innerHTML = `
+      <div class="result-part-name">${PART_NAMES[p] || 'Part ' + p}</div>
+      <div class="result-part-bar-wrap">
+        <div class="result-part-bar-fill ${fillClass}" style="width:${pPct}%"></div>
+      </div>
+      <div class="result-part-stat">${pr.correct}/${pr.total} &nbsp;(${pPct}%)</div>`;
+    partsCard.appendChild(row);
+  });
+  container.appendChild(partsCard);
+
+  // Nút
+  const actions = document.createElement('div');
+  actions.className = 'result-actions';
+
+  const btnReview = document.createElement('button');
+  btnReview.className = 'result-btn primary';
+  btnReview.textContent = '🔍 Xem lại bài làm';
+  btnReview.addEventListener('click', () => {
+    if (window.opener && !window.opener.closed) {
+      window.opener.focus();
+    } else {
+      alert('Tab bài làm đã đóng. Vui lòng quay lại tab bài làm.');
+    }
+  });
+
+  const btnHome = document.createElement('button');
+  btnHome.className = 'result-btn secondary';
+  btnHome.textContent = '🏠 Về trang chọn đề';
+  btnHome.addEventListener('click', () => {
+    window.location.href = '../index.html';
+  });
+
+  actions.appendChild(btnReview);
+  actions.appendChild(btnHome);
+  container.appendChild(actions);
+
+  document.body.appendChild(container);
+
+  // Lưu Firebase nếu đã đăng nhập
+  if (user) {
+    saveToFirebase(user);
+  }
+}
+
+async function saveToFirebase(user) {
+  try {
+    await addDoc(collection(db, 'results'), {
+      uid:           user.uid,
+      email:         user.email,
+      displayName:   user.displayName || '',
+      examId:        R.examId,
+      examTitle:     R.examTitle,
+      mode:          R.mode,
+      selectedParts: R.selectedParts,
+      partResults:   R.partResults,
+      totalCorrect:  R.totalCorrect,
+      totalQ:        R.totalQ,
+      elapsed:       R.elapsed,
+      score:         R.totalCorrect * 5,
+      pct:           Math.round(R.totalCorrect / R.totalQ * 100),
+      createdAt:     new Date(),
+    });
+    // Xóa localStorage sau khi đã lưu Firebase
+    localStorage.removeItem(resultKey);
+  } catch(e) {
+    console.error('Save to Firebase error:', e);
+  }
+}
+
+// Kiểm tra đăng nhập rồi render
+onAuthStateChanged(auth, (user) => {
+  render(user);
+});
+</script>
+
+</body>
+</html>
