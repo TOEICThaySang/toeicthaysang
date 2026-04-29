@@ -62,10 +62,19 @@ const youtubeEmbed = url => {
 // ══════════════════════════════════════════════════════════════
 async function checkWhitelist(email) {
   try {
-    const q    = query(collection(db,'whitelist'), where('email','==', email));
-    const snap = await getDocs(q);
-    return !snap.empty;
-  } catch(e) { return false; }
+    // Dùng getDoc với doc ID = email (encode @ và . thành _)
+    // Thử cả 2 cách: query where và scan toàn bộ collection
+    const snap = await getDocs(collection(db,'whitelist'));
+    const emails = [];
+    snap.forEach(d => {
+      const data = d.data();
+      if (data.email) emails.push(data.email.toLowerCase().trim());
+    });
+    return emails.includes(email.toLowerCase().trim());
+  } catch(e) { 
+    console.error('Whitelist error:', e);
+    return false; 
+  }
 }
 
 async function doSignIn() {
