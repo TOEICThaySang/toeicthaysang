@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Đăng nhập | TOEIC Thầy Sang</title>
+<link rel="icon" href="assets/favicon.png" type="image/png">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 48px 40px;
+  max-width: 420px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+}
+.logo {
+  font-size: 14px;
+  font-weight: 700;
+  color: #f5c518;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  background: #1a1a2e;
+  display: inline-block;
+  padding: 6px 16px;
+  border-radius: 20px;
+  margin-bottom: 24px;
+}
+.icon { font-size: 48px; margin-bottom: 16px; }
+.title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 8px;
+}
+.subtitle {
+  font-size: 14px;
+  color: #64748b;
+  line-height: 1.6;
+  margin-bottom: 32px;
+}
+
+/* Trạng thái */
+.status-box {
+  border-radius: 10px;
+  padding: 14px 18px;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 20px;
+  display: none;
+  text-align: left;
+  line-height: 1.5;
+}
+.status-box.show { display: block; }
+.status-box.error   { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+.status-box.success { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+.status-box.loading { background: #eff6ff; color: #1d4ed8; border: 1px solid #93c5fd; }
+
+/* Nút Google */
+.btn-google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  background: #fff;
+  border: 1.5px solid #d0d5dd;
+  border-radius: 10px;
+  padding: 14px 20px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a2e;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  margin-bottom: 16px;
+}
+.btn-google:hover {
+  background: #f8fafc;
+  border-color: #1a1a2e;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.btn-google:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.btn-google img { width: 22px; height: 22px; }
+
+/* Nút về trang chủ */
+.btn-home {
+  display: inline-block;
+  margin-top: 12px;
+  font-size: 13px;
+  color: #94a3b8;
+  text-decoration: none;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: inherit;
+}
+.btn-home:hover { color: #1a1a2e; text-decoration: underline; }
+
+.divider {
+  height: 1px;
+  background: #e2e8f0;
+  margin: 20px 0;
+}
+.contact-note {
+  font-size: 12px;
+  color: #94a3b8;
+  line-height: 1.6;
+}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="logo">TOEIC Thầy Sang</div>
+  <div class="icon" id="cardIcon">🔑</div>
+  <div class="title" id="cardTitle">Đăng nhập</div>
+  <div class="subtitle" id="cardSubtitle">
+    Đăng nhập bằng tài khoản Google để truy cập đề thi.
+  </div>
+
+  <div class="status-box" id="statusBox"></div>
+
+  <button class="btn-google" id="btnGoogle">
+    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+    Đăng nhập bằng Google
+  </button>
+
+  <button class="btn-home" id="btnBack">← Về trang chủ</button>
+
+  <div class="divider"></div>
+  <div class="contact-note">
+    Chưa có tài khoản? Liên hệ giáo viên để được cấp quyền truy cập.
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp }   from 'https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js';
+import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut }
+                           from 'https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js';
+import { getFirestore, collection, query, where, getDocs }
+                           from 'https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey:            'AIzaSyCZsFnaI6k4lxUkQOCcfxjEWyvtAJGfa_8',
+  authDomain:        'toeic-thay-sang.firebaseapp.com',
+  projectId:         'toeic-thay-sang',
+  storageBucket:     'toeic-thay-sang.firebasestorage.app',
+  messagingSenderId: '30478577148',
+  appId:             '1:30478577148:web:6cae530feb9abdf2a59679',
+};
+
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+const btnGoogle  = document.getElementById('btnGoogle');
+const btnBack    = document.getElementById('btnBack');
+const statusBox  = document.getElementById('statusBox');
+const cardIcon   = document.getElementById('cardIcon');
+const cardTitle  = document.getElementById('cardTitle');
+const cardSubtitle = document.getElementById('cardSubtitle');
+
+function showStatus(msg, type) {
+  statusBox.textContent = msg;
+  statusBox.className   = `status-box ${type} show`;
+}
+function hideStatus() {
+  statusBox.className = 'status-box';
+}
+
+async function checkWhitelist(email) {
+  try {
+    const q    = query(collection(db, 'whitelist'), where('email', '==', email));
+    const snap = await getDocs(q);
+    return !snap.empty;
+  } catch(e) { return false; }
+}
+
+// Kiểm tra nếu đã đăng nhập sẵn
+onAuthStateChanged(auth, async user => {
+  if (!user) return;
+  showStatus('Đang kiểm tra tài khoản...', 'loading');
+  const allowed = await checkWhitelist(user.email);
+  if (allowed) {
+    showSuccess(user.email);
+  } else {
+    await signOut(auth);
+    showBlocked(user.email);
+  }
+});
+
+// Đăng nhập
+btnGoogle.addEventListener('click', async () => {
+  hideStatus();
+  btnGoogle.disabled = true;
+  btnGoogle.innerHTML = `<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt=""> Đang đăng nhập...`;
+  showStatus('Đang xác thực...', 'loading');
+
+  try {
+    const provider = new GoogleAuthProvider();
+    const result   = await signInWithPopup(auth, provider);
+    const user     = result.user;
+
+    showStatus('Đang kiểm tra quyền truy cập...', 'loading');
+    const allowed = await checkWhitelist(user.email);
+
+    if (allowed) {
+      showSuccess(user.email);
+    } else {
+      await signOut(auth);
+      showBlocked(user.email);
+    }
+  } catch(e) {
+    btnGoogle.disabled = false;
+    btnGoogle.innerHTML = `<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google"> Đăng nhập bằng Google`;
+    if (e.code !== 'auth/popup-closed-by-user') {
+      showStatus('Đăng nhập thất bại. Vui lòng thử lại.', 'error');
+    } else {
+      hideStatus();
+    }
+  }
+});
+
+function showSuccess(email) {
+  cardIcon.textContent     = '✅';
+  cardTitle.textContent    = 'Đăng nhập thành công!';
+  cardSubtitle.textContent = `Xin chào ${email}. Đang chuyển hướng...`;
+  showStatus('Tài khoản hợp lệ. Đang chuyển về trang trước...', 'success');
+  btnGoogle.style.display  = 'none';
+
+  setTimeout(() => {
+    // Quay về trang trước hoặc về trang chủ
+    if (document.referrer && document.referrer.includes(location.hostname)) {
+      history.back();
+    } else {
+      window.location.href = '/';
+    }
+  }, 1500);
+}
+
+function showBlocked(email) {
+  cardIcon.textContent  = '🔒';
+  cardTitle.textContent = 'Tài khoản chưa được đăng ký';
+  showStatus(
+    `Tài khoản ${email} chưa có quyền truy cập.\nVui lòng liên hệ giáo viên để được cấp quyền!`,
+    'error'
+  );
+  btnGoogle.disabled = false;
+  btnGoogle.innerHTML = `<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google"> Thử tài khoản khác`;
+}
+
+// Về trang chủ
+btnBack.addEventListener('click', () => {
+  if (document.referrer && document.referrer.includes(location.hostname)) {
+    history.back();
+  } else {
+    window.location.href = '/';
+  }
+});
+</script>
+
+</body>
+</html>

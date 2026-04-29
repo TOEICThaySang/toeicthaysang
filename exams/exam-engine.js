@@ -270,8 +270,8 @@ function renderAuthGate(blockedEmail) {
   const btnUpgrade = card.querySelector('#btnUpgrade');
   if (btnUpgrade) {
     btnUpgrade.addEventListener('click', () => {
-      // Dẫn tới trang đăng ký — thay URL này bằng link thật của bạn
-      window.open('https://toeicthaysang.com/dang-ky', '_blank');
+      const root = typeof PATH_TO_ROOT !== 'undefined' ? PATH_TO_ROOT : '../../../';
+      window.location.href = root + 'upgrade.html';
     });
   }
 }
