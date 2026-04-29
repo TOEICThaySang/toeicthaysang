@@ -1,5 +1,5 @@
 [
-  { "id": 1,  "title": "ETS 2024 — Test 1",  "meta": "200 câu · 120 phút", "paid": true, "file": "tests/de-1.html"  },
+  { "id": 1,  "title": "ETS 2024 — Test 1",  "meta": "200 câu · 120 phút", "paid": false, "file": "tests/de-1.html"  },
   { "id": 2,  "title": "ETS 2024 — Test 2",  "meta": "200 câu · 120 phút", "paid": true, "file": "tests/de-2.html"  },
   { "id": 3,  "title": "ETS 2024 — Test 3",  "meta": "200 câu · 120 phút", "paid": true, "file": "tests/de-3.html"  },
   { "id": 4,  "title": "ETS 2024 — Test 4",  "meta": "200 câu · 120 phút", "paid": true, "file": "tests/de-4.html"  },
