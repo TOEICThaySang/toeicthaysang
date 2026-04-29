@@ -245,11 +245,11 @@ function showSuccess(email) {
   btnGoogle.style.display  = 'none';
 
   setTimeout(() => {
-    // Quay về trang trước hoặc về trang chủ
+    // Dùng referrer để quay lại đúng trang đề, reload để Firebase sync session
     if (document.referrer && document.referrer.includes(location.hostname)) {
-      history.back();
+      window.location.replace(document.referrer);
     } else {
-      window.location.href = '/';
+      window.location.replace('/');
     }
   }, 1500);
 }
@@ -268,9 +268,9 @@ function showBlocked(email) {
 // Về trang chủ
 btnBack.addEventListener('click', () => {
   if (document.referrer && document.referrer.includes(location.hostname)) {
-    history.back();
+    window.location.replace(document.referrer);
   } else {
-    window.location.href = '/';
+    window.location.replace('/');
   }
 });
 </script>

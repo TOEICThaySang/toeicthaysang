@@ -1282,6 +1282,17 @@ function renderSheetReview(R) {
 // ══════════════════════════════════════════════════════════════
 // KHỞI ĐỘNG — kiểm tra auth trước
 // ══════════════════════════════════════════════════════════════
+
+// Hiện loading trong khi Firebase kiểm tra session
+document.body.innerHTML = '';
+document.body.style.cssText = 'min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%)';
+document.body.innerHTML = `
+  <div style="text-align:center;color:rgba(255,255,255,0.7);font-family:'Segoe UI',sans-serif">
+    <div style="width:40px;height:40px;border:3px solid rgba(255,255,255,0.2);border-top-color:#f5c518;border-radius:50%;animation:spin 0.75s linear infinite;margin:0 auto 16px"></div>
+    <div style="font-size:14px">Đang kiểm tra tài khoản...</div>
+    <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+  </div>`;
+
 onAuthStateChanged(auth, async user => {
   if (!user) {
     renderAuthGate(null);
