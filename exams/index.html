@@ -9,11 +9,9 @@
 <link rel="stylesheet" href="exams.css">
 </head>
 <body>
-
 <script src="../config.js"></script>
 <script>const PATH_TO_ROOT = '../';</script>
 <script src="../nav.js"></script>
-
 <div class="page-header">
   <div class="container">
     <div class="page-header-badge">📝 Luyện đề</div>
@@ -21,22 +19,17 @@
     <p>Đề thi ETS 2024 chuẩn format — 200 câu · 120 phút · Giải thích chi tiết</p>
   </div>
 </div>
-
 <div class="page-body">
   <div class="container">
-
     <div class="exams-section-header">
       <div class="exams-section-title">📗 ETS 2024</div>
       <div class="exams-section-sub">10 bài test · 200 câu · 120 phút mỗi đề</div>
     </div>
-
     <div class="exam-grid" id="examGrid">
       <p style="color:var(--text-3);grid-column:1/-1;padding:20px 0">Đang tải...</p>
     </div>
-
   </div>
 </div>
-
 <script>
 fetch('ets2024/lessons.json')
   .then(r => {
@@ -47,36 +40,24 @@ fetch('ets2024/lessons.json')
     const grid = document.getElementById('examGrid');
     grid.innerHTML = data.map((exam, i) => {
       /* Lịch sử làm bài từ localStorage */
-      const histKey = `tts_exam_ets2024_${exam.id}`;
+      const histKey = 'hist_ets_de' + exam.id;
       const history = JSON.parse(localStorage.getItem(histKey) || '[]');
       const best    = history.length
-        ? Math.max(...history.map(h => h.score))
+        ? Math.max(...history.map(h => h.totalQ > 0 ? Math.round(h.totalCorrect / h.totalQ * 100) : 0))
         : null;
 
-      const isPaid = exam.paid === true;
-
       /* Xác định hành động khi click */
-      let onclick;
-      if (isPaid) {
-        onclick = `location.href='../upgrade.html'`;
-      } else if (exam.file) {
-        onclick = `location.href='ets2024/${exam.file}'`;
-      } else {
-        onclick = `showToast('⏳ Đề đang được chuẩn bị...')`;
-      }
-
-      /* Badge trạng thái */
-      let badgeHTML;
-      if (isPaid) {
-        badgeHTML = `<span class="exam-card-btn paid-lock">🔒 Nâng cấp</span>`;
-      } else if (exam.file) {
+      let onclick, badgeHTML;
+      if (exam.file) {
+        onclick   = `location.href='ets2024/${exam.file}'`;
         badgeHTML = `<span class="exam-card-btn free">Làm đề →</span>`;
       } else {
+        onclick   = `showToast('⏳ Đề đang được chuẩn bị...')`;
         badgeHTML = `<span class="exam-card-btn coming-soon">⏳ Sắp ra</span>`;
       }
 
       return `
-        <div class="exam-card ${isPaid ? 'paid' : ''} anim"
+        <div class="exam-card anim"
              style="animation-delay:${i * .04}s"
              onclick="${onclick}"
              role="button"
@@ -94,7 +75,7 @@ fetch('ets2024/lessons.json')
         </div>`;
     }).join('');
 
-    /* Keyboard accessibility cho cards */
+    /* Keyboard accessibility */
     grid.querySelectorAll('.exam-card').forEach(card => {
       card.addEventListener('keydown', e => {
         if (e.key === 'Enter' || e.key === ' ') {
@@ -104,14 +85,26 @@ fetch('ets2024/lessons.json')
       });
     });
   })
-  .catch(err => {
+  .catch(() => {
     document.getElementById('examGrid').innerHTML =
       `<p style="color:var(--danger);grid-column:1/-1;padding:20px 0">
         Không tải được danh sách đề thi. Vui lòng thử lại.
        </p>`;
-    console.error('Lỗi load lessons.json:', err);
   });
-</script>
 
+function showToast(msg) {
+  let t = document.getElementById('_toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = '_toast';
+    t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a2e;color:#fff;padding:10px 20px;border-radius:8px;font-size:14px;z-index:9999;opacity:0;transition:opacity 0.3s';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.style.opacity = '0'; }, 2500);
+}
+</script>
 </body>
 </html>
