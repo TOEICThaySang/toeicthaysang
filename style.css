@@ -60,27 +60,6 @@
   --font:             'Be Vietnam Pro', sans-serif;
 }
 
-/* ─────────────────────────────────────────────
-   CSS VARIABLES — DARK MODE
-   ───────────────────────────────────────────── */
-[data-theme="dark"] {
-  --bg:               #0f172a;
-  --bg-card:          #1e293b;
-  --bg-nav:           #0f172a;
-  --bg-hover:         #1e293b;
-  --text:             #f1f5f9;
-  --text-2:           #94a3b8;
-  --text-3:           #64748b;
-  --border:           #1e293b;
-  --border-2:         #334155;
-  --primary-light:    rgba(29,111,242,.15);
-  --success-light:    rgba(16,185,129,.15);
-  --warning-light:    rgba(245,158,11,.15);
-  --danger-light:     rgba(239,68,68,.15);
-  --shadow-sm:        0 1px 4px rgba(0,0,0,.3);
-  --shadow-md:        0 4px 20px rgba(0,0,0,.4);
-  --shadow-lg:        0 8px 40px rgba(0,0,0,.5);
-}
 
 /* ─────────────────────────────────────────────
    RESET
@@ -191,27 +170,6 @@ input, select, textarea { font-family: var(--font); }
   gap: 8px;
   margin-left: auto;
   flex-shrink: 0;
-}
-.dark-toggle {
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
-  background: var(--bg-card);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: .95rem;
-  cursor: pointer;
-  transition: var(--transition);
-  color: var(--text-2);
-  /* Tap target */
-  min-width: 40px;
-  min-height: 40px;
-}
-.dark-toggle:hover {
-  border-color: var(--primary);
-  color: var(--primary);
 }
 
 /* ── Hamburger ── */
@@ -415,7 +373,6 @@ input, select, textarea { font-family: var(--font); }
   font-size: .84rem;
   text-align: center;
 }
-[data-theme="dark"] .footer { background: #020617; }
 .footer-logo {
   display: flex;
   align-items: center;

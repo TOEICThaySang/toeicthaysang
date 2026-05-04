@@ -12,9 +12,10 @@
 <script src="../config.js"></script>
 <script>const PATH_TO_ROOT = '../';</script>
 <script src="../nav.js"></script>
+<script type="module" src="../auth.js"></script>
 <div class="page-header">
   <div class="container">
-    <div class="page-header-badge">📝 Luyện đề</div>
+    <div class="page-header-badge"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Luyện đề</div>
     <h1>Luyện đề TOEIC ETS</h1>
     <p>Đề thi ETS 2024 chuẩn format — 200 câu · 120 phút · Giải thích chi tiết</p>
   </div>
@@ -22,7 +23,7 @@
 <div class="page-body">
   <div class="container">
     <div class="exams-section-header">
-      <div class="exams-section-title">📗 ETS 2024</div>
+      <div class="exams-section-title"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:7px"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>ETS 2024</div>
       <div class="exams-section-sub">10 bài test · 200 câu · 120 phút mỗi đề</div>
     </div>
     <div class="exam-grid" id="examGrid">
@@ -31,6 +32,13 @@
   </div>
 </div>
 <script>
+const _ic = (sz,st,inner) => `<svg xmlns="http://www.w3.org/2000/svg" width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="${st}">${inner}</svg>`;
+const IX = {
+  clipboard: _ic(13,'vertical-align:-1px;margin-right:4px','<path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>'),
+  trophy:    _ic(13,'vertical-align:-1px;margin-right:4px','<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/>'),
+  hourglass: _ic(13,'vertical-align:-1px;margin-right:4px','<path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"/><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/>'),
+};
+
 fetch('ets2024/lessons.json')
   .then(r => {
     if (!r.ok) throw new Error('Fetch failed');
@@ -52,8 +60,8 @@ fetch('ets2024/lessons.json')
         onclick   = `location.href='ets2024/${exam.file}'`;
         badgeHTML = `<span class="exam-card-btn free">Làm đề →</span>`;
       } else {
-        onclick   = `showToast('⏳ Đề đang được chuẩn bị...')`;
-        badgeHTML = `<span class="exam-card-btn coming-soon">⏳ Sắp ra</span>`;
+        onclick   = `showToast('${IX.hourglass}Đề đang được chuẩn bị...')`;
+        badgeHTML = `<span class="exam-card-btn coming-soon">${IX.hourglass}Sắp ra</span>`;
       }
 
       return `
@@ -65,9 +73,9 @@ fetch('ets2024/lessons.json')
              aria-label="${exam.title}">
           <div class="exam-card-num">${String(exam.id).padStart(2, '0')}</div>
           <div class="exam-card-title">${exam.title}</div>
-          <div class="exam-card-meta">📋 ${exam.meta}</div>
+          <div class="exam-card-meta">${IX.clipboard}${exam.meta}</div>
           ${best !== null
-            ? `<div class="exam-card-best">🏆 Tốt nhất: ${best}%</div>`
+            ? `<div class="exam-card-best">${IX.trophy}Tốt nhất: ${best}%</div>`
             : ''}
           <div class="exam-card-footer">
             ${badgeHTML}
@@ -92,6 +100,113 @@ fetch('ets2024/lessons.json')
        </p>`;
   });
 
+// ── Lịch sử toàn cục ──
+</script>
+<script type="module">
+import { collection, query, where, getDocs }
+  from 'https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js';
+
+const _icM = (sz,st,inner) => `<svg xmlns="http://www.w3.org/2000/svg" width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="${st}">${inner}</svg>`;
+const IM = {
+  barChart: _icM(15,'vertical-align:-2px;margin-right:5px','<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>'),
+  calendar: _icM(13,'vertical-align:-1px;margin-right:4px','<rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>'),
+  clock:    _icM(13,'vertical-align:-1px;margin-right:4px','<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>'),
+  xClose:   `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
+};
+
+function insertHistoryBtn() {
+  if (document.getElementById('btnGlobalHistory')) return;
+  const navRight = document.getElementById('navRight');
+  if (!navRight) return;
+  const btn = document.createElement('button');
+  btn.id = 'btnGlobalHistory';
+  btn.className = 'gh-nav-btn';
+  btn.innerHTML = IM.barChart + 'Lịch sử';
+  navRight.insertBefore(btn, navRight.firstChild);
+  btn.addEventListener('click', () => showGlobalHistory(window._ttsUser));
+}
+
+if (document.readyState === 'complete') {
+  insertHistoryBtn();
+} else {
+  document.addEventListener('DOMContentLoaded', () => setTimeout(insertHistoryBtn, 0));
+}
+
+async function showGlobalHistory(user) {
+  if (!user) {
+    window.showToast('Vui lòng đăng nhập để xem lịch sử.', 'error');
+    return;
+  }
+  const overlay = document.createElement('div');
+  overlay.className = 'gh-overlay';
+  overlay.innerHTML = `
+    <div class="gh-modal">
+      <div class="gh-header">
+        <div class="gh-title">${IM.barChart}Lịch sử làm đề</div>
+        <button class="gh-close" aria-label="Đóng">${IM.xClose}</button>
+      </div>
+      <div class="gh-body" id="ghBody">
+        <div class="gh-placeholder">Đang tải...</div>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.querySelector('.gh-close').addEventListener('click', () => overlay.remove());
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+
+  const body = document.getElementById('ghBody');
+  try {
+    const snap = await getDocs(query(collection(window._ttsDb,'results'), where('uid','==',user.uid)));
+    const records = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+      .sort((a,b) => {
+        const ta = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : (a.savedAt||0);
+        const tb = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : (b.savedAt||0);
+        return tb - ta;
+      });
+
+    if (!records.length) {
+      body.innerHTML = '<div class="gh-placeholder">Chưa có lịch sử làm bài.</div>';
+      return;
+    }
+    body.innerHTML = '';
+    records.forEach(r => {
+      const ts   = r.createdAt?.toDate ? r.createdAt.toDate() : new Date(r.savedAt||0);
+      const date = ts.toLocaleDateString('vi-VN');
+      const time = ts.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});
+      const pct  = r.totalQ>0 ? Math.round(r.totalCorrect/r.totalQ*100) : 0;
+      const sc   = pct>=70?'good':pct>=40?'mid':'low';
+      const row  = document.createElement('div');
+      row.className = 'gh-row';
+      row.innerHTML = `
+        <div class="gh-row-info">
+          <div class="gh-row-title">${r.examTitle||r.examId}</div>
+          <div class="gh-row-meta">
+            <span class="gh-badge ${r.mode==='practice'?'practice':'test'}">${r.mode==='practice'?'Luyện tập':'Thi thử'}</span>
+            <span>${IM.calendar}${date}</span>
+            <span>${IM.clock}${time}</span>
+            <span>Part ${(r.selectedParts||[]).join(', ')}</span>
+          </div>
+        </div>
+        <div class="gh-score ${sc}">${r.totalCorrect}/${r.totalQ}<br><small>${pct}%</small></div>
+        ${r.answers&&r.examUrl
+          ? `<button class="gh-btn-review">Xem lại</button>`
+          : `<div class="gh-no-review">—</div>`}`;
+      if (r.answers && r.examUrl) {
+        row.querySelector('.gh-btn-review').addEventListener('click', () => {
+          overlay.remove();
+          const url = new URL(r.examUrl, location.href);
+          url.searchParams.set('reviewDoc', r.id);
+          window.location.href = url.toString();
+        });
+      }
+      body.appendChild(row);
+    });
+  } catch(e) {
+    console.error(e);
+    body.innerHTML = '<div class="gh-placeholder" style="color:#dc2626">Lỗi tải dữ liệu.</div>';
+  }
+}
+</script>
+<script>
 function showToast(msg) {
   let t = document.getElementById('_toast');
   if (!t) {

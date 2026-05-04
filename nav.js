@@ -26,26 +26,6 @@
   const r = (path) => ROOT + path.replace(/^\//, '');
 
   /* ══════════════════════════════════════════════
-     DARK MODE
-     ══════════════════════════════════════════════ */
-  const DM = {
-    key:    'tts_theme',
-    get:    ()  => localStorage.getItem(DM.key) || SITE.darkMode?.default || 'light',
-    set:    (v) => { localStorage.setItem(DM.key, v); DM.apply(v); },
-    toggle: ()  => DM.set(DM.get() === 'dark' ? 'light' : 'dark'),
-    icon:   ()  => DM.get() === 'dark' ? '☀️' : '🌙',
-    apply:  (v) => {
-      const theme = v === 'system'
-        ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
-        : v;
-      document.documentElement.setAttribute('data-theme', theme);
-    },
-  };
-
-  /* Áp dụng theme ngay lập tức (trước khi render) */
-  DM.apply(DM.get());
-
-  /* ══════════════════════════════════════════════
      SEO — Inject meta tags tự động
      ══════════════════════════════════════════════ */
   function injectSEO() {
@@ -144,15 +124,7 @@
         <ul class="nav-links" id="navLinks" role="menubar">
           ${linksHTML}
         </ul>
-        <div class="nav-right" id="navRight">
-          <button
-            class="dark-toggle"
-            id="darkToggle"
-            aria-label="Đổi giao diện sáng/tối"
-            title="Đổi giao diện">
-            ${DM.icon()}
-          </button>
-        </div>
+        <div class="nav-right" id="navRight"></div>
         <button
           class="hamburger"
           id="hamburger"
@@ -199,12 +171,6 @@
     navOverlay.addEventListener('click', closeMenu);
     navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
 
-    /* ── Dark mode button ── */
-    const darkBtn = document.getElementById('darkToggle');
-    darkBtn.addEventListener('click', () => {
-      DM.toggle();
-      darkBtn.textContent = DM.icon();
-    });
   }
 
   /* ══════════════════════════════════════════════

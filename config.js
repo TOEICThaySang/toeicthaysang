@@ -36,12 +36,6 @@ const SITE = {
     copyright: `© ${new Date().getFullYear()} TOEIC Thầy Sang. All rights reserved.`,
   },
 
-  /* ─── DARK MODE ─── */
-  darkMode: {
-    enabled: true,
-    default: 'light', /* 'light' | 'dark' | 'system' */
-  },
-
 };
 
 window.SITE = SITE;

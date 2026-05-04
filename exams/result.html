@@ -13,7 +13,6 @@
 <script type="module">
 import { initializeApp }   from 'https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js';
 import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js';
-import { getFirestore, addDoc, collection } from 'https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js';
 
 const firebaseConfig = {
   apiKey:            'AIzaSyCZsFnaI6k4lxUkQOCcfxjEWyvtAJGfa_8',
@@ -25,7 +24,6 @@ const firebaseConfig = {
 };
 const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db   = getFirestore(app);
 
 // ── Đọc key từ URL ──
 const params    = new URLSearchParams(location.search);
@@ -50,7 +48,7 @@ if (!R) {
 // ── Tính toán ──
 const pct     = R.totalQ > 0 ? Math.round(R.totalCorrect / R.totalQ * 100) : 0;
 const score   = R.totalCorrect * 5; // 1 câu = 5 điểm
-const elapsed = R.elapsed || 0;
+const elapsed = (R.elapsed && R.elapsed < 86400) ? R.elapsed : 0;
 const mm      = Math.floor(elapsed / 60).toString().padStart(2,'0');
 const ss      = (elapsed % 60).toString().padStart(2,'0');
 
@@ -58,6 +56,10 @@ const PART_NAMES = {
   1: 'Part 1', 2: 'Part 2', 3: 'Part 3', 4: 'Part 4',
   5: 'Part 5', 6: 'Part 6', 7: 'Part 7',
 };
+
+const IC_REVIEW = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+const IC_LIST   = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>`;
+const IC_HOME   = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`;
 
 // ── Render ──
 function render(user) {
@@ -77,12 +79,30 @@ function render(user) {
   container.className = 'result-container';
 
   // Tổng điểm
+  const ringColor  = pct >= 70 ? '#22c55e' : pct >= 40 ? '#f59e0b' : '#ef4444';
+  const circ       = 2 * Math.PI * 80;
+  const finalOffset = circ * (1 - pct / 100);
+
   const scoreCard = document.createElement('div');
   scoreCard.className = 'result-score-card';
   scoreCard.innerHTML = `
     <div class="result-score-label">Điểm TOEIC ước tính</div>
-    <div class="result-score-main">${score}</div>
-    <div class="result-score-sub">${R.totalCorrect} / ${R.totalQ} câu đúng &nbsp;·&nbsp; ${pct}%</div>
+    <div class="result-ring-wrap">
+      <svg class="result-ring-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="100" cy="100" r="80" fill="none" stroke="#e2e8f0" stroke-width="12"/>
+        <circle class="result-ring-progress" cx="100" cy="100" r="80" fill="none"
+          stroke="${ringColor}" stroke-width="12"
+          stroke-dasharray="${circ.toFixed(2)}"
+          stroke-dashoffset="${circ.toFixed(2)}"
+          stroke-linecap="round"
+          transform="rotate(-90 100 100)"/>
+      </svg>
+      <div class="result-ring-inner">
+        <div class="result-ring-score">${score}</div>
+        <div class="result-ring-pct">${pct}%</div>
+      </div>
+    </div>
+    <div class="result-score-sub">${R.totalCorrect} / ${R.totalQ} câu đúng</div>
     <div class="result-score-grid">
       <div class="result-stat">
         <div class="result-stat-value">${R.totalCorrect}</div>
@@ -99,6 +119,13 @@ function render(user) {
     </div>`;
   container.appendChild(scoreCard);
 
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      const ring = scoreCard.querySelector('.result-ring-progress');
+      if (ring) ring.style.strokeDashoffset = finalOffset.toFixed(2);
+    });
+  });
+
   // Chi tiết theo part
   const partsCard = document.createElement('div');
   partsCard.className = 'result-parts-card';
@@ -114,9 +141,22 @@ function render(user) {
       <div class="result-part-bar-wrap">
         <div class="result-part-bar-fill ${fillClass}" style="width:${pPct}%"></div>
       </div>
-      <div class="result-part-stat">${pr.correct}/${pr.total} &nbsp;(${pPct}%)</div>`;
+      <div class="result-part-stat">${pr.correct}/${pr.total}</div>`;
     partsCard.appendChild(row);
   });
+
+  // Tổng thống kê
+  const totalWrong   = R.totalWrong   ?? (R.totalQ - R.totalCorrect);
+  const totalBlank   = R.totalBlank   ?? 0;
+  const totalFlagged = R.totalFlagged ?? 0;
+  const summaryEl = document.createElement('div');
+  summaryEl.className = 'result-summary-row';
+  summaryEl.innerHTML = `
+    <div class="result-summary-item correct"><div class="result-summary-val">${R.totalCorrect}</div><div class="result-summary-lbl">Đúng</div></div>
+    <div class="result-summary-item wrong"><div class="result-summary-val">${totalWrong}</div><div class="result-summary-lbl">Sai</div></div>
+    <div class="result-summary-item blank"><div class="result-summary-val">${totalBlank}</div><div class="result-summary-lbl">Bỏ trống</div></div>
+    <div class="result-summary-item flagged"><div class="result-summary-val">${totalFlagged}</div><div class="result-summary-lbl">Gắn cờ</div></div>`;
+  partsCard.appendChild(summaryEl);
   container.appendChild(partsCard);
 
   // Nút
@@ -125,57 +165,30 @@ function render(user) {
 
   const btnReview = document.createElement('button');
   btnReview.className = 'result-btn primary';
-  btnReview.textContent = '🔍 Xem lại bài làm';
-  btnReview.addEventListener('click', () => {
-    if (window.opener && !window.opener.closed) {
-      window.opener.focus();
-    } else {
-      alert('Tab bài làm đã đóng. Vui lòng quay lại tab bài làm.');
-    }
+  btnReview.innerHTML = IC_REVIEW + 'Xem lại bài làm';
+  btnReview.addEventListener('click', () => { window.close(); });
+
+  const btnSelect = document.createElement('button');
+  btnSelect.className = 'result-btn secondary';
+  btnSelect.innerHTML = IC_LIST + 'Về trang chọn part';
+  btnSelect.addEventListener('click', () => {
+    if (R.examUrl) window.location.href = R.examUrl;
   });
 
   const btnHome = document.createElement('button');
   btnHome.className = 'result-btn secondary';
-  btnHome.textContent = '🏠 Về trang chọn đề';
+  btnHome.innerHTML = IC_HOME + 'Về trang chọn đề';
   btnHome.addEventListener('click', () => {
     window.location.href = '../index.html';
   });
 
   actions.appendChild(btnReview);
+  actions.appendChild(btnSelect);
   actions.appendChild(btnHome);
   container.appendChild(actions);
 
   document.body.appendChild(container);
 
-  // Lưu Firebase nếu đã đăng nhập
-  if (user) {
-    saveToFirebase(user);
-  }
-}
-
-async function saveToFirebase(user) {
-  try {
-    await addDoc(collection(db, 'results'), {
-      uid:           user.uid,
-      email:         user.email,
-      displayName:   user.displayName || '',
-      examId:        R.examId,
-      examTitle:     R.examTitle,
-      mode:          R.mode,
-      selectedParts: R.selectedParts,
-      partResults:   R.partResults,
-      totalCorrect:  R.totalCorrect,
-      totalQ:        R.totalQ,
-      elapsed:       R.elapsed,
-      score:         R.totalCorrect * 5,
-      pct:           Math.round(R.totalCorrect / R.totalQ * 100),
-      createdAt:     new Date(),
-    });
-    // Xóa localStorage sau khi đã lưu Firebase
-    localStorage.removeItem(resultKey);
-  } catch(e) {
-    console.error('Save to Firebase error:', e);
-  }
 }
 
 // Kiểm tra đăng nhập rồi render

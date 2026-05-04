@@ -22,9 +22,6 @@
   overflow: hidden;
   text-align: center;
 }
-[data-theme="dark"] .hero {
-  background: linear-gradient(160deg, #0d1b3e 0%, var(--bg) 65%);
-}
 
 /* Vòng sáng nền */
 .hero::before {
@@ -158,13 +155,14 @@
 <script src="config.js"></script>
 <script>const PATH_TO_ROOT = '';</script>
 <script src="nav.js"></script>
+<script type="module" src="auth.js"></script>
 
 <main>
   <section class="hero">
     <div class="hero-inner">
 
       <div class="hero-badge anim">
-        🎯 Luyện thi TOEIC cùng Thầy Sang
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>Luyện thi TOEIC cùng Thầy Sang
       </div>
 
       <h1 class="hero-title anim anim-d1">
@@ -179,7 +177,7 @@
 
       <div class="hero-cta anim anim-d3">
         <a href="exams/index.html" class="btn btn-primary">
-          📝 Luyện đề ngay
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:6px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Luyện đề ngay
         </a>
       </div>
 
